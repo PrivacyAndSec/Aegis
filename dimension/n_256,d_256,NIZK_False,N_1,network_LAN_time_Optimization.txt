@@ -1,0 +1,16 @@
+Polynomial dimension: 256, Message dimension: 256, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+Encrypt message: 0.002020597457885742s, Send Encrypted Message: 0.006537199020385742s, Total: 0.008557796478271484s
+Aggregation and Decrypt: 0.0019659996032714844s
+Verify Key: 0.0029909610748291016s
+Generate well-formednesss proof for key:0.0039882659912109375s, Send Proofs: 0.006010532379150391s, Total: 0.009998798370361328s
+Aggregator send challenge: 0.0070133209228515625s
+Generate blind factor of key:0.0s, Send blind factor: 0.006413459777832031s, Total: 0.006413459777832031s
+Aggregator Verify Well-Foremedness proof: 0.0029637813568115234s
+Generate L infinity bound proof for message:0.0029926300048828125s, Send Proofs: 0.0066339969635009766s, Total: 0.009626626968383789s
+Aggregator send challenge: 0.006015777587890625s
+Generate blind factor of key:0.0s, Send blind factor: 0.0060138702392578125s, Total: 0.0060138702392578125s
+Aggregator Verify L infinity bound proof: 0.0029633045196533203s
+Generate L 2 bound proof for message:0.01894974708557129s, Send Proofs: 0.007048606872558594s, Total: 0.025998353958129883s
+Aggregator send challenge: 0.0067119598388671875s
+Generate blind factor of key:0.001965761184692383s, Send blind factor: 0.006012439727783203s, Total: 0.007978200912475586s
+Aggregator Verify 2 infinity bound proof: 0.0029633045196533203s

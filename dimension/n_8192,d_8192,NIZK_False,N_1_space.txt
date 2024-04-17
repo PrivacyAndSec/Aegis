@@ -1,0 +1,12 @@
+Polynomial dimension: 8192, Message dimension: 8192, User number: 1, NIZK: False, Latency: 5ms, Bandwidth: 2000mbps
+Encrypted message size: 56bytes
+Encrypted key size: 56bytes
+Well-formedness proof size: 56bytes
+Well-formedness challenge size: 32bytes
+Blind factor of WFP size: 64bytes
+L infity norm proof size: 56bytes
+L infity norm challenge size: 32bytes
+Blind factor of LIN size: 64bytes
+L 2 norm proof size: 104bytes
+L 2 norm challenge size: 28bytes
+Blind factor of L2N size: 152bytes

@@ -1,0 +1,6 @@
+Polynomial dimension: 64, Message dimension: 64, User number: 1, NIZK: True, Latency: 5s, Bandwidth: 2000mbps
+Encrypted message size: 56bytes
+Encrypted key size: 56bytes
+Well-formedness proof size: 88bytes
+L infity norm proof size: 72bytes
+L 2 norm proof size: 216bytes
