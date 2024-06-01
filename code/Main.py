@@ -24,6 +24,9 @@ def main(config):
     B_I = config.B_I
     B_2 = config.B_2
     K = config.K
+    y = config.y
+    alpha = config.alpha
+    beta = int(alpha * alpha * np.sum(y * y))
     latency_s = config.latency_s
     bandwidth_mbps = config.bandwidth_mbps
 
@@ -39,12 +42,12 @@ def main(config):
     #time_star = time.time()
     rlwe = RLWE(n, q, t, std)
     # 创建聚合器
-    aggregator = Aggregator(rlwe, N, d, n, t, q, B_I,B_2, NIZK)
+    aggregator = Aggregator(rlwe, N, d, n, t, q, B_I,B_2, NIZK, y=y, beta=beta)
     aggregator.update_A(ts)
     aggregator.updata_A_other(ts)
 
     # 创建用户
-    users = [User(i, n, rlwe, t, n, q, d, B_I, B_2, NIZK) for i in range(N)]
+    users = [User(i, n, rlwe, t, n, q, d, B_I, B_2, NIZK, beta=beta, y=y) for i in range(N)]
 
 
     print("End of initialization")
@@ -291,8 +294,12 @@ def main(config):
             time_end = time.time_ns()
             time_verify_L2N = time_verify_L2N + time_end - time_start
             if config.NIZK is True:
-                NIZK_L2N_Proof_size = NIZK_L2N_Proof_size + sys.getsizeof((L2N_Proof.t_1.poly, L2N_Proof.t_2.poly, L2N_Proof.t_mult.poly,
-                                L2N_Proof.t_plus.poly, L2N_Proof.c_plus.poly, L2N_Proof.c_mult.poly, L2N_Proof.t_wave.poly, L2N_Proof.c_2.poly, S_x_1.poly, S_x_2.poly, S_x_mult.poly, S_x_plus.poly, S_s_1.poly, S_s_2.poly, S_s_mult.poly,
+                NIZK_L2N_Proof_size = NIZK_L2N_Proof_size + sys.getsizeof((L2N_Proof.t_1.poly, L2N_Proof.t_2.poly,
+                                                                           L2N_Proof.t_mult.poly, L2N_Proof.t_plus.poly,
+                                                                           L2N_Proof.c_plus.poly, L2N_Proof.c_mult.poly,
+                                                                           L2N_Proof.t_wave.poly, L2N_Proof.c_2.poly,
+                                                                           S_x_1.poly, S_x_2.poly, S_x_mult.poly,
+                                                                           S_x_plus.poly, S_s_1.poly, S_s_2.poly, S_s_mult.poly,
              S_s_plus.poly, S_e_1.poly, S_e_2.poly, S_e_mult.poly, S_e_plus.poly, S_s_wave.poly, S_e_wave.poly))
             if len(result) > 0:
                 for error in result:
@@ -310,6 +317,74 @@ def main(config):
                         print("\x1b[31mUser {}: Error in L2 boundry\x1b[0m".format(i))
         L2N_computation = time_L2N_Proof + time_BF_L2N
         L2N_verify = time_verify_L2N
+
+        # Verify Cosine
+
+        time_cos_verify = 0
+        time_cos_proof = 0
+        space_cos = 0
+        IZK_cos = 0
+        print("Verify cosine of message")
+        for i in range(N):
+            time_start = time.time_ns()
+            XX_Proof, XY_Proof, Range_Proof = users[i].proof_cosine_init()
+            time_end = time.time_ns()
+            time_cos_proof = time_cos_proof + time_end - time_start
+            message = (XX_Proof.c_list, XX_Proof.t_list, XX_Proof.t_w, XY_Proof.c_list, XY_Proof.t_list,
+                       XY_Proof.t_w_list, Range_Proof.X, Range_Proof.S)
+            space_cos = space_cos + simulate_network_conditions(message, latency_s, bandwidth_mbps)
+
+            time_start = time.time_ns()
+            XX_c, XY_c, RP_b, RP_z = aggregator.cos_protocol_init(XX_Proof.c_list, XX_Proof.t_list, XX_Proof.t_w,
+                                                                  XY_Proof.c_list, XY_Proof.t_list, XY_Proof.t_w_list, Range_Proof.X, Range_Proof.S)
+            time_end = time.time_ns()
+            time_cos_verify = time_cos_verify + time_end - time_start
+
+            message = (XX_c, XY_c, RP_b, RP_z)
+            IZK_cos = IZK_cos + simulate_network_conditions(message, latency_s, bandwidth_mbps)
+
+            time_start = time.time_ns()
+            S_s_list_xx, S_x_list_xx, S_e_list_xx, S_s_w_xx, S_e_w_xx, \
+            S_s_list_xy, S_x_list_xy, S_e_list_xy, S_s_w_list_xy, S_e_w_list_xy, \
+            T_list_rp = users[i].cosine_response(XX_c, XY_c, RP_b, RP_z)
+            time_end = time.time_ns()
+            time_cos_proof = time_cos_proof + time_end - time_start
+
+            message = (S_s_list_xx, S_x_list_xx, S_e_list_xx, S_s_w_xx, S_e_w_xx, S_s_list_xy, S_x_list_xy,
+                       S_e_list_xy, S_s_w_list_xy, S_e_w_list_xy, T_list_rp)
+            space_cos = space_cos + simulate_network_conditions(message, latency_s, bandwidth_mbps)
+
+            time_start = time.time_ns()
+            result_xx, result_xy, x_rp = aggregator.cos_protocol_verify(S_s_list_xx, S_x_list_xx, S_e_list_xx, S_s_w_xx, S_e_w_xx,
+                                           S_s_list_xy, S_x_list_xy, S_e_list_xy, S_s_w_list_xy, S_e_w_list_xy,
+                                           T_list_rp)
+            IZK_cos = IZK_cos + simulate_network_conditions(x_rp, latency_s, bandwidth_mbps)
+
+            time_end = time.time_ns()
+            time_cos_verify = time_cos_verify + time_end - time_start
+
+            if result_xx != "correct":
+                print("\x1b[31mUser {}'s message: {}\x1b[0m".format(i, result_xx))
+
+            if result_xy != "correct":
+                print("\x1b[31mUser {}'s message: {}\x1b[0m".format(i, result_xy))
+
+            time_start = time.time_ns()
+            L_x, R_x, E_x, t_hat, tau_x, T_e = users[i].cosine_rp(x_rp)
+            time_end = time.time_ns()
+            time_cos_proof = time_cos_proof + time_end - time_start
+
+            message = (L_x, R_x, E_x, t_hat, tau_x, T_e)
+            space_cos = space_cos + simulate_network_conditions(message, latency_s, bandwidth_mbps)
+
+            time_start = time.time_ns()
+            result_rp = aggregator.cos_range_verify(L_x, R_x, E_x, t_hat, tau_x, T_e)
+            time_end = time.time_ns()
+            time_cos_verify = time_cos_verify + time_end - time_start
+
+            if result_rp != "correct":
+                print("\x1b[31mUser {}'s message: {}\x1b[0m".format(i, result_rp))
+
         time_file = open(config.time_result_path, 'w')
 
         time_file.writelines("Polynomial dimension: {}, Message dimension: {}, User number: {}, NIZK: {}, Latency: {}s, Bandwidth: "
@@ -318,6 +393,8 @@ def main(config):
         time_file.writelines("{},{}\n".format(Key_computation, Key_verify))
         time_file.writelines("{},{}\n".format(LIN_computation, LIN_verify))
         time_file.writelines("{},{}\n".format(L2N_computation, L2N_verify))
+        time_file.writelines("{},{}\n".format(time_cos_proof, time_cos_verify))
+        time_file.writelines("cos_cost:{}bytes,IZK_cost:{}bytes\n".format(space_cos, IZK_cos))
 
         """
         time_file.writelines("Encrypt message: {}s, Send Encrypted Message: {}s, Total: {}s\n".format(time_Encrypt_message,

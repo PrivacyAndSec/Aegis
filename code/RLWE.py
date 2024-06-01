@@ -16,17 +16,20 @@ class RLWE:
         s = discrete_uniform(self.n, self.q,ts+783) #用随机数当作环多项式的系数，生成公钥A
         return s
 
-    def encrypt(self, m, A, s, e=None):
+    def encrypt(self, m, A, s, e=None, q=None):
         if e is None:
             e = discrete_gaussian(self.n, self.q, 1+57333, type=None)
-        m = Ring_polynomial.Rq(m.poly, self.q) #原密文是在R_t的环上，将其转移到R_q的多项式环。
+        if q is None:
+            q = self.q
+        m = Ring_polynomial.Rq(m.poly, q) #原密文是在R_t的环上，将其转移到R_q的多项式环。
         x = A * s + m + self.t * e
         return x
 
-    def decrypt(self, c, A, s):
-        m = Ring_polynomial.Rq((c - A * s).poly, self.t)
+    def decrypt(self, c, A, s, t=None):
+        if t is None:
+            t = self.t
+        m = Ring_polynomial.Rq((c - A * s).poly, t)
         return m
-
 
 def discrete_gaussian(n, q, ts, type=None, mean=0., std=1.):
     if type is "encrypt s":

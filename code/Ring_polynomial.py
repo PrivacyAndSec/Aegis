@@ -40,7 +40,7 @@ class Rq(object):
     def __repr__(self):
         template = 'Rq: {} (mod {}), reminder range: ({}, {}]'
         return template.format(self.poly.__repr__(), self.q,
-                               -self.q//2, self.q//2)
+                              -self.q//2, self.q//2)
 
     def __len__(self):
         return len(self.poly)  # degree of a polynomial

@@ -3,11 +3,11 @@ import numpy as np
 import well_formedness_proof as WFP
 import L_Infry_norm as LIN
 import L_2_norm as L2N
-
+import ZKPofCosine as cos
 
 
 class Aggregator:
-    def __init__(self, rlwe, N, d, n, t, q, B_I, B_2, NIZK):
+    def __init__(self, rlwe, N, d, n, t, q, B_I, B_2, NIZK, beta, y):
         self.c1 = []
         self.c2 = []
         self.rlwe = rlwe
@@ -20,6 +20,8 @@ class Aggregator:
         self.t = t
         self.q = q
         self.NIZK = NIZK
+        self.beta = beta
+        self.y = Rq(y,q)
 
 
 
@@ -100,3 +102,22 @@ class Aggregator:
     def L_2_protocol_verify(self, i, S_x_1, S_x_2, S_x_mult, S_x_plus, S_s_1, S_s_2, S_s_mult, S_s_plus, S_e_1, S_e_2, S_e_mult, S_e_plus, S_s_wave, S_e_wave):
         result = self.L2N_Verify.verify(self.A, S_x_1, S_x_2, S_x_mult, S_x_plus, S_s_1, S_s_2, S_s_mult, S_s_plus, S_e_1, S_e_2, S_e_mult, S_e_plus, S_s_wave, S_e_wave, self.c1[i])
         return result
+
+    def cos_protocol_init(self, c_list_XX, t_list_XX, t_w_XX, c_list_XY, t_list_XY, t_w_XY, X_RP, S_RP):
+        self.XX_verify = cos.XXWellformednessVerify(c_list_XX, t_list_XX, t_w_XX, self.q,self.n, self.t, self.s, self.rlwe, self.beta, self.NIZK)
+        self.XY_verify = cos.XYWellformednessVerify(self.y, c_list_XY, t_list_XY, t_w_XY, self.q,self.n, self.t, self.s, self.rlwe, self.NIZK)
+        self.RP_verify = cos.RangeVerify(X_RP, S_RP, c_list_XY[2] - c_list_XX[1],  self.q,self.n, self.t, self.s, self.rlwe, self.NIZK)
+
+        return self.XX_verify.c, self.XY_verify.c, self.RP_verify.b, self.RP_verify.z
+
+    def cos_protocol_verify(self, S_s_list_xx, S_x_list_xx, S_e_list_xx, S_s_w_xx, S_e_w_xx,
+                            S_s_list_xy, S_x_list_xy, S_e_list_xy, S_s_w_list_xy, S_e_w_list_xy,
+                            T_list_rp):
+        result_xx = self.XX_verify.verify(self.A, S_s_list_xx, S_x_list_xx, S_e_list_xx, S_s_w_xx, S_e_w_xx)
+        result_xy = self.XY_verify.verify(self.A, S_s_list_xy, S_x_list_xy, S_e_list_xy, S_s_w_list_xy, S_e_w_list_xy)
+        self.RP_verify.challenge2(T_list_rp)
+        return result_xx, result_xy, self.RP_verify.x
+
+    def cos_range_verify(self, L_x, R_x, E_x, t_hat, tau_x, T_e):
+        result_rp = self.RP_verify.verify(self.A, L_x, R_x, E_x, t_hat, tau_x, T_e)
+        return result_rp

@@ -1,3 +1,5 @@
+import numpy as np
+
 import Main
 class Config():
     def __init__(self, d=None):
@@ -17,6 +19,7 @@ class Config():
         self.t = 37  # prime number, t < q
         self.B_I = 3
         self.B_2 = self.d+10
+        self.alpha = 0.5
         # A high-speed LAN environment with low latency
         # latency_ms=5
         # bandwidth_mbps=2000
@@ -24,8 +27,14 @@ class Config():
         self.network = "LAN"
         self.latency_s = 5
         self.bandwidth_mbps = 2000
-        self.time_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
-        self.space_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+        self.y = np.ones(self.n)
+        #self.time_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+        #self.space_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+        self.time_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_time.txt".format(
+            self.n, self.d, self.NIZK, self.N, self.network)
+        self.space_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_space.txt".format(
+            self.n, self.d, self.NIZK, self.N, self.network)
+
 
     def set_network(self,net):
         if net == 'home':
@@ -48,18 +57,28 @@ class Config():
             print("It is beyond the normal range of NTT")
     def update_path(self, space=None):
         if space is None:
-            self.time_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
-            self.space_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization".format(self.n, self.d, self.NIZK, self.N, self.network)
+            #self.time_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            #self.space_result_path = "result/Optimization/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization".format(self.n, self.d, self.NIZK, self.N, self.network)
+            self.time_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_time.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            self.space_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_space.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
         elif space is "network":
-            self.time_result_path = "result/Network/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d,
+            #self.time_result_path = "result/Network/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d,
+                                                                                               #self.NIZK, self.N,
+                                                                                               #self.network)
+            #self.space_result_path = "result/Network/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d,
+                                                                                                 #self.NIZK, self.N,
+                                                                                                 #self.network)
+            self.time_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_time_net.txt".format(self.n, self.d,
                                                                                                self.NIZK, self.N,
                                                                                                self.network)
-            self.space_result_path = "result/Network/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d,
+            self.space_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_space_net.txt".format(self.n, self.d,
                                                                                                  self.NIZK, self.N,
                                                                                                  self.network)
         else:
-            self.time_result_path = "result/Space/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
-            self.space_result_path = "result/Space/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            #self.time_result_path = "result/Space/n_{},d_{},NIZK_{},N_{},network_{}_time_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            #self.space_result_path = "result/Space/n_{},d_{},NIZK_{},N_{},network_{}_space_Optimization.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            self.time_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_time_space.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
+            self.space_result_path = "result/cos/n_{},d_{},NIZK_{},N_{},network_{}_space_space.txt".format(self.n, self.d, self.NIZK, self.N, self.network)
 def test_d(d_list):
     for d in d_list:
         config = Config(d)
@@ -105,6 +124,6 @@ def test_space(d_list):
         Main.main(config)
 
 if __name__ == "__main__":
-    #d_list = [2 ** i for i in range(14, 16)]
-    #test_d(d_list)
-    test_run(d=2)
+    d_list = [2 ** i for i in range(9, 15)]
+    test_d(d_list)
+    #test_run(d=2 **15)

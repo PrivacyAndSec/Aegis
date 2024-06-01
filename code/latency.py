@@ -29,10 +29,10 @@ def simulate_network_conditions(data, latency_ms, bandwidth_mbps):
         bytes_sent += bytes_to_send
 
         # Simulate the delay to send this chunk at the specified bandwidth
-        time.sleep(time_to_send * (bytes_to_send / total_data_size))
+        #time.sleep(time_to_send * (bytes_to_send / total_data_size))
 
     # Simulate round-trip latency at the end
-    time.sleep(latency_sec)
+    #time.sleep(latency_sec)
     return total_data_size
 
 
