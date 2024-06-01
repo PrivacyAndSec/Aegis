@@ -1,0 +1,5 @@
+Polynomial dimension: 256, Message dimension: 256, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+2992400
+7974300,6024400
+1994200,3026600
+20983100,14963500

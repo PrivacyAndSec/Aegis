@@ -1,0 +1,7 @@
+Polynomial dimension: 8192, Message dimension: 8192, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+2441063200
+7367591100,4924011300
+2435991900,2450627200
+19738423200,12260495800
+54185076000,37124829000
+cos_cost:320bytes,IZK_cost:104bytes

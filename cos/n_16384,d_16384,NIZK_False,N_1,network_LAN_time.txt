@@ -1,0 +1,7 @@
+Polynomial dimension: 16384, Message dimension: 16384, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+10124426400
+29813338100,19966537100
+9848042100,9892245600
+78474620500,49173113900
+217404808600,148730914300
+cos_cost:320bytes,IZK_cost:104bytes

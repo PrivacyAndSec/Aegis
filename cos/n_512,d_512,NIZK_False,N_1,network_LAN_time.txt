@@ -1,0 +1,7 @@
+Polynomial dimension: 512, Message dimension: 512, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+8976700
+29925800,22934100
+10971600,10941200
+79814300,53828300
+221434800,160543100
+cos_cost:320bytes,IZK_cost:104bytes

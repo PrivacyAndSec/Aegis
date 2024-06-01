@@ -1,0 +1,5 @@
+Polynomial dimension: 16, Message dimension: 16, User number: 1, NIZK: False, Latency: 5s, Bandwidth: 2000mbps
+0
+1006600,1004500
+2032100,0
+999100,1066700
