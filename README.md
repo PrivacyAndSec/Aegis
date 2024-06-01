@@ -24,6 +24,8 @@ This section outlines how to use the key components of the APSA project. Each mo
 
 - **L_infty_norm**: Implements zero-knowledge proofs for the $L_{\infty}$ norm bounds. This ensures that data stays within predefined limits, enhancing security and reliability.
 
+- **cos**: The cosine similarity is used to constrain the data input by the user, so that the cosine similarity with the data y is less than $\alpha$, and the method of zero-knowledge proof is used to accomplish this.
+
 - **User**: Contains the operations that need to be performed by the user side in the APSA protocol. This includes data submission and initial processing steps.
 
 - **Aggregator**: Manages the aggregation operations required in the APSA protocol. This module is responsible for collecting and processing data from multiple users securely.
